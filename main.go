@@ -15,18 +15,29 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	spotApiKey := os.Getenv("SPOT_API_KEY")
-	spotSecretKey := os.Getenv("SPOT_SECRET_KEY")
+	apiKey := os.Getenv("API_KEY")
+	secretKey := os.Getenv("SECRET_KEY")
 
-	client := binance.NewClient(spotApiKey, spotSecretKey)
+	spotClient := binance.NewClient(apiKey, secretKey)
+	deliveryClient := binance.NewDeliveryClient(apiKey, secretKey)
 
 	// Get the current price of BTCUSDT
-	symbolPrice, err := client.NewListPricesService().Symbol("BTCUSDT").Do(context.Background())
+	spotSymbolPrice, err := spotClient.NewListPricesService().Symbol("BTCUSDT").Do(context.Background())
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	for _, p := range symbolPrice {
+	for _, p := range spotSymbolPrice {
+		fmt.Println(p.Symbol, p.Price)
+	}
+
+	// Get the current price of BTCUSDT COIN-M Delivery future
+	deliverySymbolPrice, err := deliveryClient.NewListPricesService().Symbol("BTCUSD_240329").Do(context.Background())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, p := range deliverySymbolPrice {
 		fmt.Println(p.Symbol, p.Price)
 	}
 
