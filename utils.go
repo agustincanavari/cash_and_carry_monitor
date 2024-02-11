@@ -25,21 +25,31 @@ func fetchFutures(client *delivery.Client) []string {
 	return symbols
 }
 
-func generateRateCalculators(futureList []string) []rateCalculator {
-	var calculators []rateCalculator
+func generateRateCalculators(futureList []string) map[string]rateCalculator {
+	rateCalculatorsMap := make(map[string]rateCalculator)
 	for _, s := range futureList {
-		spotSymbol, futureDate := strings.Split(s, "_")[0], strings.Split(s, "_")[1]
-		calculators = append(calculators, rateCalculator{
-			futureSymbol:   s,
-			spotSymbol:     spotSymbol,
-			settlementDate: time.Date(2024, time.March, 29, 0, 0, 0, 0, time.UTC),
-			tradeDate:      parseFutureDate(futureDate),
-		})
+		spotSymbol, futureDate := strings.Split(s, "_")[0]+"T", strings.Split(s, "_")[1]
+		rc, exists := rateCalculatorsMap[spotSymbol]
+		if exists {
+			rc.futures = append(rc.futures, underlyingFuture{
+				futureSymbol:   s,
+				settlementDate: parseFutureDate(futureDate),
+			})
+			rateCalculatorsMap[spotSymbol] = rc
+		} else {
+			rateCalculatorsMap[spotSymbol] = rateCalculator{
+				spotSymbol: spotSymbol,
+				tradeDate:  getTodayDate(),
+				futures: []underlyingFuture{
+					{
+						futureSymbol:   s,
+						settlementDate: parseFutureDate(futureDate),
+					},
+				},
+			}
+		}
 	}
-	for _, c := range calculators {
-		fmt.Println(c)
-	}
-	return calculators
+	return rateCalculatorsMap
 }
 
 func parseFutureDate(futureDate string) time.Time {
@@ -48,4 +58,12 @@ func parseFutureDate(futureDate string) time.Time {
 	day, _ := strconv.Atoi(futureDate[4:])
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	return date
+}
+
+func getTodayDate() time.Time {
+	now := time.Now()
+	year := now.Year()
+	month := now.Month()
+	day := now.Day()
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }
