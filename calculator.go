@@ -7,6 +7,8 @@ import (
 )
 
 type rateCalculator struct {
+	futureSymbol   string
+	spotSymbol     string
 	spotPrice      float64
 	futurePrice    float64
 	settlementDate time.Time
