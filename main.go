@@ -1,15 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
-	"strings"
-	"time"
 
 	"github.com/adshao/go-binance/v2"
-	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/joho/godotenv"
 )
 
@@ -25,19 +21,7 @@ func main() {
 	deliveryClient := binance.NewDeliveryClient(apiKey, secretKey)
 
 	deliverableFutures := fetchFutures(deliveryClient)
-	var calculators []rateCalculator
-
-	now := time.Now()
-	year, month, date := now.Date()
-
-	for _, s := range deliverableFutures {
-		calculators = append(calculators, rateCalculator{
-			futureSymbol:   s,
-			spotSymbol:     strings.Split(s, "_")[0],
-			settlementDate: time.Date(2024, time.March, 29, 0, 0, 0, 0, time.UTC), //parse actual settlemetndate
-			tradeDate:      time.Date(year, month, date, 0, 0, 0, 0, time.UTC),
-		})
-	}
+	calculators := generateRateCalculators(deliverableFutures)
 	for _, c := range calculators {
 		fmt.Println(c)
 	}
@@ -77,19 +61,4 @@ func main() {
 			fmt.Println(p.Symbol, p.Price)
 		}
 	*/
-}
-
-func fetchFutures(client *delivery.Client) []string {
-	var symbols []string
-	futuresInfo, err := client.NewListPricesService().Do(context.Background())
-	if err != nil {
-		fmt.Println(err)
-		return symbols
-	}
-	for _, f := range futuresInfo {
-		if !strings.Contains(f.Symbol, "_PERP") {
-			symbols = append(symbols, f.Symbol)
-		}
-	}
-	return symbols
 }
