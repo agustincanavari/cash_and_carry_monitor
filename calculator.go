@@ -25,7 +25,7 @@ type rateCalculator struct {
 	tradeDate  time.Time
 }
 
-func (r rateCalculator) print() {
+func (r *rateCalculator) print() {
 	fmt.Printf("Spot Symbol: %s, Spot Price: %f, Trade Date: %s\n", r.spotSymbol, r.spotPrice, r.tradeDate.Format("2006-01-02"))
 	fmt.Println("Futures:")
 	for _, f := range r.futures {
@@ -76,4 +76,18 @@ func (r *rateCalculator) updateFuturePrices(deliveryClient *delivery.Client) {
 		}
 		f.futurePrice = futurePrice
 	}
+}
+
+func startCalculatorUpdate(calc *rateCalculator, spotClient *binance.Client, deliveryClient *delivery.Client, updateInterval time.Duration) {
+	ticker := time.NewTicker(updateInterval)
+	go func() {
+		//lint:ignore S1000 for ticker-based loop
+		for {
+			select {
+			case <-ticker.C:
+				calc.updateSpotPrice(spotClient)
+				calc.updateFuturePrices(deliveryClient)
+			}
+		}
+	}()
 }
