@@ -46,7 +46,7 @@ func main() {
 	}
 
 	for _, calc := range calculators {
-		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*5)
+		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*60)
 	}
 
 	// API endpoint to provide data
