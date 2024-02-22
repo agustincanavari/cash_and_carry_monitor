@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -27,6 +29,10 @@ func createClients(apiKey, secretKey string) (*binance.Client, *delivery.Client)
 }
 
 func main() {
+	// Serve static files (HTML, CSS, JS)
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fs)
+
 	apiKey, secretKey := loadEnv()
 	spotClient, deliveryClient := createClients(apiKey, secretKey)
 
@@ -37,30 +43,49 @@ func main() {
 	for _, calc := range calculators {
 		calc.updateSpotPrice(spotClient)
 		calc.updateFuturePrices(deliveryClient)
-		calc.print()
 	}
 
 	for _, calc := range calculators {
-		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*30)
+		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*5)
 	}
 
-	printCalculators(calculators, time.Second*20)
+	// API endpoint to provide data
+	http.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
+		data := fetchData(calculators)
+		json.NewEncoder(w).Encode(data)
+	})
+
+	log.Println("Server starting on :8080...")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	select {}
 }
 
-func printCalculators(calculators map[string]*rateCalculator, printInterval time.Duration) {
-	ticker := time.NewTicker(printInterval)
-	time.Sleep(printInterval)
-	go func() {
-		//lint:ignore S1000 for ticker-based loop
-		for {
-			select {
-			case <-ticker.C:
-				for _, calc := range calculators {
-					calc.print()
-				}
-			}
+func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
+	var data []CalculatorData
+	for _, calc := range calculators {
+		calcData := CalculatorData{
+			SpotSymbol: calc.spotSymbol,
+			SpotPrice:  calc.spotPrice,
+			TradeDate:  calc.tradeDate.Format("2006-01-02"),
+			Futures:    []FutureData{},
 		}
-	}()
+
+		for _, f := range calc.futures {
+			futureData := FutureData{
+				FutureSymbol:   f.futureSymbol,
+				FuturePrice:    f.futurePrice,
+				SettlementDate: f.settlementDate.Format("2006-01-02"),
+				APR:            f.APR(calc.spotPrice, calc.tradeDate),
+				APY:            f.APY(calc.spotPrice, calc.tradeDate),
+			}
+			calcData.Futures = append(calcData.Futures, futureData)
+		}
+
+		data = append(data, calcData)
+	}
+	return data
 }

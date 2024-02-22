@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cash-and-Carry Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cash-and-Carry Monitor</h1>
+        <button onclick="fetchData()">Refresh Data</button>
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Cryptocurrency</th>
+                    <th>Spot Price</th>
+                    <th>Futures Symbol</th>
+                    <th>Futures Price</th>
+                    <th>Settlement Date</th>
+                    <th>APR</th>
+                    <th>APY</th>
+                </tr>
+            </thead>
+            <tbody id="data">
+                <!-- Data rows with sub-rows will be populated here by script.js -->
+            </tbody>
+        </table>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
