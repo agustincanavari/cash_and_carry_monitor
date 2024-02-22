@@ -25,8 +25,8 @@ func fetchFutures(client *delivery.Client) []string {
 	return symbols
 }
 
-func generateRateCalculators(futureList []string) map[string]rateCalculator {
-	rateCalculatorsMap := make(map[string]rateCalculator)
+func generateRateCalculators(futureList []string) map[string]*rateCalculator {
+	rateCalculatorsMap := make(map[string]*rateCalculator)
 	for _, s := range futureList {
 		spotSymbol, futureDate := strings.Split(s, "_")[0]+"T", strings.Split(s, "_")[1]
 		rc, exists := rateCalculatorsMap[spotSymbol]
@@ -37,7 +37,7 @@ func generateRateCalculators(futureList []string) map[string]rateCalculator {
 			})
 			rateCalculatorsMap[spotSymbol] = rc
 		} else {
-			rateCalculatorsMap[spotSymbol] = rateCalculator{
+			rateCalculatorsMap[spotSymbol] = &rateCalculator{
 				spotSymbol: spotSymbol,
 				tradeDate:  getTodayDate(),
 				futures: []underlyingFuture{
