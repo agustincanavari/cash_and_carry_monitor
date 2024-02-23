@@ -11,7 +11,7 @@ import (
 	"github.com/adshao/go-binance/v2/delivery"
 )
 
-func loadEnv() (string, string) {
+func loadKeys() (string, string) {
 	apiKey := os.Getenv("API_KEY")
 	secretKey := os.Getenv("SECRET_KEY")
 	return apiKey, secretKey
@@ -28,7 +28,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
-	apiKey, secretKey := loadEnv()
+	apiKey, secretKey := loadKeys()
 	spotClient, deliveryClient := createClients(apiKey, secretKey)
 
 	deliverableFutures := fetchFutures(deliveryClient)
@@ -50,8 +50,9 @@ func main() {
 		json.NewEncoder(w).Encode(data)
 	})
 
-	log.Println("Server starting on :8080...")
-	err := http.ListenAndServe(":8080", nil)
+	port := getEnvWithDefault("PORT", "8080")
+	log.Printf("Listening on port %s", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
