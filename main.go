@@ -9,14 +9,9 @@ import (
 
 	"github.com/adshao/go-binance/v2"
 	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/joho/godotenv"
 )
 
 func loadEnv() (string, string) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 	apiKey := os.Getenv("API_KEY")
 	secretKey := os.Getenv("SECRET_KEY")
 	return apiKey, secretKey
