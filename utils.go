@@ -69,22 +69,6 @@ func getTodayDate() time.Time {
 	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }
 
-func printCalculators(calculators map[string]*rateCalculator, printInterval time.Duration) {
-	ticker := time.NewTicker(printInterval)
-	time.Sleep(printInterval)
-	go func() {
-		//lint:ignore S1000 for ticker-based loop
-		for {
-			select {
-			case <-ticker.C:
-				for _, calc := range calculators {
-					calc.print()
-				}
-			}
-		}
-	}()
-}
-
 func getEnvWithDefault(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {

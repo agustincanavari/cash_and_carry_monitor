@@ -25,15 +25,6 @@ type rateCalculator struct {
 	tradeDate  time.Time
 }
 
-func (r *rateCalculator) print() {
-	fmt.Printf("Spot Symbol: %s, Spot Price: %f, Trade Date: %s\n", r.spotSymbol, r.spotPrice, r.tradeDate.Format("2006-01-02"))
-	fmt.Println("Futures:")
-	for _, f := range r.futures {
-		fmt.Printf("  Symbol: %s, Price: %f, Settlement Date: %s, APR: %f, APY: %f\n", f.futureSymbol, f.futurePrice, f.settlementDate.Format("2006-01-02"), f.APR(r.spotPrice, r.tradeDate), f.APY(r.spotPrice, r.tradeDate))
-	}
-	fmt.Println("")
-}
-
 func (f underlyingFuture) dayDifference(date time.Time) int {
 	duration := f.settlementDate.Sub(date)
 	return int(duration.Hours() / 24)
