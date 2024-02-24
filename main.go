@@ -83,9 +83,9 @@ func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
 		}
 
 		data = append(data, calcData)
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].SpotSymbol < data[j].SpotSymbol
-		})
 	}
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].SpotSymbol < data[j].SpotSymbol
+	})
 	return data
 }
