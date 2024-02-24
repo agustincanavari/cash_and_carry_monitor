@@ -38,6 +38,10 @@ func (f underlyingFuture) APR(spotPrice float64, tradeDate time.Time) float64 {
 	return 365 * (math.Pow((f.APY(spotPrice, tradeDate)/100)+1, 1.0/365.0) - 1) * 100
 }
 
+func (f underlyingFuture) yield(spotPrice float64) float64 {
+	return 100 * (f.futurePrice - spotPrice) / spotPrice
+}
+
 func (r *rateCalculator) updateSpotPrice(spotClient *binance.Client) {
 	spotSymbolPrice, err := spotClient.NewListPricesService().Symbol(r.spotSymbol).Do(context.Background())
 	if err != nil {

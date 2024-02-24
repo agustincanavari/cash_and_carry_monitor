@@ -6,6 +6,7 @@ type FutureData struct {
 	SettlementDate string  `json:"settlementDate"`
 	APR            float64 `json:"apr"`
 	APY            float64 `json:"apy"`
+	Yield          float64 `json:"yield"`
 }
 
 type CalculatorData struct {
