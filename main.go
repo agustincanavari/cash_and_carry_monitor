@@ -42,7 +42,7 @@ func main() {
 	}
 
 	for _, calc := range calculators {
-		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*60)
+		startCalculatorUpdate(calc, spotClient, deliveryClient, time.Second*30)
 	}
 
 	// API endpoint to provide data
@@ -93,6 +93,9 @@ func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
 				APY:            f.APY(calc.spotPrice, calc.tradeDate),
 			}
 			calcData.Futures = append(calcData.Futures, futureData)
+			sort.Slice(calcData.Futures, func(i, j int) bool {
+				return calcData.Futures[i].SettlementDate < calcData.Futures[j].SettlementDate
+			})
 		}
 
 		data = append(data, calcData)
