@@ -10,7 +10,7 @@ function fetchData() {
                 mainRow.innerHTML = `
                     <td>${calc.spotSymbol}</td>
                     <td>${calc.spotPrice}</td>
-                    <td colspan="5"></td> <!-- Empty cells for futures data -->
+                    <td colspan="6"></td> <!-- Empty cells for futures data -->
                 `;
                 tableBody.appendChild(mainRow);
 
@@ -26,6 +26,7 @@ function fetchData() {
                         <td>${future.settlementDate}</td>
                         <td>${future.apr.toFixed(2)}%</td>
                         <td>${future.apy.toFixed(2)}%</td>
+                        <td>${future.yield.toFixed(2)}%</td>
                     `;
                     tableBody.appendChild(futureRow);
                 });

@@ -91,6 +91,7 @@ func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
 				SettlementDate: f.settlementDate.Format("2006-01-02"),
 				APR:            f.APR(calc.spotPrice, calc.tradeDate),
 				APY:            f.APY(calc.spotPrice, calc.tradeDate),
+				Yield:          f.yield(calc.spotPrice),
 			}
 			calcData.Futures = append(calcData.Futures, futureData)
 			sort.Slice(calcData.Futures, func(i, j int) bool {
