@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/adshao/go-binance/v2"
@@ -82,6 +83,9 @@ func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
 		}
 
 		data = append(data, calcData)
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].SpotSymbol < data[j].SpotSymbol
+		})
 	}
 	return data
 }
