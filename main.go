@@ -48,12 +48,25 @@ func main() {
 	// API endpoint to provide data
 	http.HandleFunc("/api/data", func(w http.ResponseWriter, r *http.Request) {
 		data := fetchData(calculators)
-		json.NewEncoder(w).Encode(data)
+		err := json.NewEncoder(w).Encode(data)
+		if err != nil {
+			log.Printf("Error encoding data: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
 	})
 
 	port := getEnvWithDefault("PORT", "8080")
+	server := &http.Server{
+		Addr:         ":" + port,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  15 * time.Second,
+		Handler:      nil, // use http.DefaultServeMux
+	}
 	log.Printf("Listening on port %s", port)
-	err := http.ListenAndServe(":"+port, nil)
+	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
