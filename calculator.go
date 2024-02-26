@@ -13,12 +13,14 @@ import (
 )
 
 type underlyingFuture struct {
+	lastUpdate     time.Time
 	futureSymbol   string
 	futurePrice    float64
 	settlementDate time.Time
 }
 
 type rateCalculator struct {
+	lastUpdate time.Time
 	spotSymbol string
 	spotPrice  float64
 	futures    []underlyingFuture
@@ -54,6 +56,7 @@ func (r *rateCalculator) updateSpotPrice(spotClient *binance.Client) {
 		os.Exit(1)
 	}
 	r.spotPrice = spotPrice
+	r.lastUpdate = time.Now()
 }
 
 func (r *rateCalculator) updateFuturePrices(deliveryClient *delivery.Client) {
@@ -70,6 +73,7 @@ func (r *rateCalculator) updateFuturePrices(deliveryClient *delivery.Client) {
 			os.Exit(1)
 		}
 		f.futurePrice = futurePrice
+		f.lastUpdate = time.Now()
 	}
 }
 
