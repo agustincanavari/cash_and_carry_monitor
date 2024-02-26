@@ -87,13 +87,14 @@ func fetchData(calculators map[string]*rateCalculator) []CalculatorData {
 
 		for _, f := range calc.futures {
 			futureData := FutureData{
-				FutureSymbol:   f.futureSymbol,
-				FuturePrice:    f.futurePrice,
-				SettlementDate: f.settlementDate.Format("2006-01-02"),
-				APR:            f.APR(calc.spotPrice, calc.tradeDate),
-				APY:            f.APY(calc.spotPrice, calc.tradeDate),
-				Yield:          f.yield(calc.spotPrice),
-				LastUpdated:    f.lastUpdate,
+				FutureSymbol:     f.futureSymbol,
+				FuturePrice:      f.futurePrice,
+				SettlementDate:   f.settlementDate.Format("2006-01-02"),
+				APR:              f.APR(calc.spotPrice, calc.tradeDate),
+				APY:              f.APY(calc.spotPrice, calc.tradeDate),
+				Yield:            f.yield(calc.spotPrice),
+				LastUpdated:      f.lastUpdate,
+				DaysToSettlement: f.dayDifference(calc.tradeDate),
 			}
 			calcData.Futures = append(calcData.Futures, futureData)
 			sort.Slice(calcData.Futures, func(i, j int) bool {
